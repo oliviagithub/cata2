@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Galería - Drive + Excel</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Galería de Obras</h1>
+    <p class="subtitle">Imágenes desde Google Drive + datos desde Excel (local)</p>
+    <div class="controls">
+      <input id="folderInput" placeholder="Pega aquí la URL pública de la carpeta de Drive" style="width:60%">
+      <button id="loadBtn">Cargar galería</button>
+    </div>
+  </header>
+
+  <main id="galeria" class="grid"></main>
+
+<script>
+async function cargar(folderUrl) {
+  const cont = document.getElementById('galeria');
+  cont.innerHTML = '<div class="loading">Cargando...</div>';
+  try {
+    const res = await fetch('/galeria?folder=' + encodeURIComponent(folderUrl));
+    const data = await res.json();
+    if (!Array.isArray(data)) {
+      cont.innerHTML = '<div class="error">Error: ' + (data.error || 'respuesta inválida') + '</div>';
+      return;
+    }
+    if (data.length === 0) {
+      cont.innerHTML = '<div class="empty">No se encontraron items</div>';
+      return;
+    }
+    cont.innerHTML = data.map(item => `
+      <article class="card">
+        <div class="imgwrap">${ item.url ? `<img loading="lazy" src="${item.url}" alt="${item.nombre}">` : '<div class="noimg">Sin imagen</div>' }</div>
+        <div class="meta">
+          <h2>${item.nombre}</h2>
+          <div class="tecnica"><strong>Técnica:</strong> ${item.tecnica}</div>
+          <p class="descripcion">${item.descripcion}</p>
+          <div class="precio"><strong>Precio:</strong> $${item.precio}</div>
+        </div>
+      </article>
+    `).join('');
+  } catch (err) {
+    cont.innerHTML = '<div class="error">Error cargando galería: ' + err.message + '</div>';
+  }
+}
+
+document.getElementById('loadBtn').addEventListener('click', () => {
+  const url = document.getElementById('folderInput').value.trim();
+  if (!url) return alert('Pegá la URL pública de la carpeta de Drive');
+  cargar(url);
+});
+
+document.getElementById('folderInput').value = "https://drive.google.com/drive/folders/1yZXl2SuU_vCCj6t-FlTgM0BANUCjly7a?usp=sharing";
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "drive-gallery-render",
+  "version": "1.0.0",
+  "description": "Galería que obtiene imágenes de Google Drive (carpeta pública) y combina con Excel - listo para Render",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-fetch": "^2.6.7",
+    "jsdom": "^22.1.0",
+    "xlsx": "^0.18.5",
+    "cors": "^2.8.5"
+  }
+}
